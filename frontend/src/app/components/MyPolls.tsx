@@ -4,10 +4,16 @@ import { useEffect, useState } from "react";
 import { getMyPolls } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
+interface PollOption {
+  _id: string;
+  text: string;
+  votes: number;
+}
+
 interface Poll {
   _id: string;
   question: string;
-  options: string[];
+  options: PollOption[];
   createdAt: string;
 }
 
@@ -23,7 +29,16 @@ export default function MyPolls() {
     const fetchPolls = async () => {
       try {
         const res = await getMyPolls();
-        setPolls(res.polls);
+        // Normalize options in case API returns string[]
+        const normalized = res.polls.map((poll) => ({
+          ...poll,
+          options: poll.options.map((opt, idx) =>
+            typeof opt === "string"
+              ? { _id: `${poll._id}-${idx}`, text: opt, votes: 0 }
+              : opt
+          ),
+        }));
+        setPolls(normalized as Poll[]);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -63,9 +78,12 @@ export default function MyPolls() {
             {poll.question}
           </h4>
 
-          <ul className="list-disc pl-5 text-gray-700">
-            {poll.options.map((option, index) => (
-              <li key={index}>{option}</li>
+          <ul className="list-disc pl-5 text-gray-700 space-y-1">
+            {poll.options.map((option) => (
+              <li key={option._id} className="flex items-center gap-2">
+                <span className="font-medium text-gray-800">{option.text}</span>
+                <span className="text-xs text-gray-500">({option.votes} votes)</span>
+              </li>
             ))}
           </ul>
         </div>

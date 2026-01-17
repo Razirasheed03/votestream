@@ -63,7 +63,7 @@ export default function DashboardPage() {
               key={tab.key}
               onClick={() =>
                 tab.external
-                  ? router.push("/")
+                  ? router.push("/discover")
                   : setActiveTab(tab.key as Tab)
               }
               className={`rounded-2xl p-5 text-left border-2 backdrop-blur transition
@@ -100,6 +100,15 @@ export default function DashboardPage() {
   <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
     <h3 className="text-xl font-bold mb-4">My Polls</h3>
     <MyPolls />
+    <div className="mt-4 flex justify-end">
+      <button
+        onClick={() => router.push("/discover")}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition"
+      >
+        Go to Discover
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
   </div>
 )}
 

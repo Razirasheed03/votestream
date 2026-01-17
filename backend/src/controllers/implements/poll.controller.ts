@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IPollService } from "../../services/interfaces/poll.service.interface";
+import { AppError } from "../../utils/AppError";
 
 export class PollController {
   constructor(
@@ -45,6 +46,37 @@ export class PollController {
         success: true,
         data: { polls },
       });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  getActivePolls = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const polls = await this._pollService.getActivePolls();
+
+      res.status(200).json({
+        success: true,
+        data: polls,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  vote = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const pollId = Array.isArray(req.params.pollId) ? req.params.pollId[0] : req.params.pollId;
+      const optionId = Array.isArray(req.params.optionId) ? req.params.optionId[0] : req.params.optionId;
+
+      const userId = (req as any).userId;
+      if (!userId) {
+        throw new AppError(401, "Unauthorized");
+      }
+
+      const result = await this._pollService.vote(pollId, optionId, userId);
+
+      res.status(200).json(result);
     } catch (err) {
       next(err);
     }
