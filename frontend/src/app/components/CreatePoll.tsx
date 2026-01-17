@@ -3,39 +3,59 @@
 
 import { useState } from "react";
 import { createPoll } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface PollOption {
   id: number;
   text: string;
 }
 
-export default function CreatePoll({ onCancel }: { onCancel: () => void }) {
+export default function CreatePoll({
+  onCancel,
+}: {
+  onCancel: () => void;
+}) {
+  const { user, loading } = useAuth();
+
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState<PollOption[]>([
     { id: 1, text: "" },
     { id: 2, text: "" },
   ]);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const addOption = () => {
     if (options.length >= 6) return;
-    setOptions([...options, { id: options.length + 1, text: "" }]);
+    setOptions((prev) => [
+      ...prev,
+      { id: prev.length + 1, text: "" },
+    ]);
   };
 
   const removeOption = (id: number) => {
     if (options.length <= 2) return;
-    setOptions(options.filter((o) => o.id !== id));
+    setOptions((prev) => prev.filter((o) => o.id !== id));
   };
 
   const updateOption = (id: number, value: string) => {
-    setOptions(options.map((o) => (o.id === id ? { ...o, text: value } : o)));
+    setOptions((prev) =>
+      prev.map((o) =>
+        o.id === id ? { ...o, text: value } : o
+      )
+    );
   };
 
   const handleSubmit = async () => {
     setError(null);
     setSuccess(null);
+
+    if (loading || !user) {
+      setError("Authentication not ready. Please wait.");
+      return;
+    }
 
     const trimmedQuestion = question.trim();
     if (!trimmedQuestion) {
@@ -45,7 +65,7 @@ export default function CreatePoll({ onCancel }: { onCancel: () => void }) {
 
     const validOptions = options
       .map((o) => o.text.trim())
-      .filter((text) => text.length > 0);
+      .filter(Boolean);
 
     if (validOptions.length < 2) {
       setError("At least 2 options are required");
@@ -58,20 +78,24 @@ export default function CreatePoll({ onCancel }: { onCancel: () => void }) {
         question: trimmedQuestion,
         options: validOptions,
       });
+
       setSuccess("Poll created successfully!");
       setQuestion("");
       setOptions([
         { id: 1, text: "" },
         { id: 2, text: "" },
       ]);
+
       setTimeout(() => {
         onCancel();
         setSuccess(null);
       }, 600);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to create poll";
-      setError(message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to create poll");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -93,24 +117,30 @@ export default function CreatePoll({ onCancel }: { onCancel: () => void }) {
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-bold mb-2">Question</label>
+          <label className="block text-sm font-bold mb-2">
+            Question
+          </label>
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             rows={4}
             className="w-full rounded-xl border-2 border-blue-200 px-4 py-3 outline-none resize-none focus:border-blue-500"
-            placeholder="What do you prefer and why?"
           />
         </div>
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <label className="font-bold text-sm">Options</label>
-            <span className="text-xs text-gray-500">Min 2 • Max 6</span>
+            <span className="text-xs text-gray-500">
+              Min 2 • Max 6
+            </span>
           </div>
 
           {options.map((option) => (
-            <div key={option.id} className="flex items-center gap-3">
+            <div
+              key={option.id}
+              className="flex items-center gap-3"
+            >
               <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-600">
                 {option.id}
               </span>
@@ -118,9 +148,10 @@ export default function CreatePoll({ onCancel }: { onCancel: () => void }) {
               <input
                 type="text"
                 value={option.text}
-                onChange={(e) => updateOption(option.id, e.target.value)}
+                onChange={(e) =>
+                  updateOption(option.id, e.target.value)
+                }
                 className="flex-1 rounded-xl border-2 border-blue-200 px-3 py-2 outline-none focus:border-blue-500"
-                placeholder={`Option ${option.id}`}
               />
 
               <button

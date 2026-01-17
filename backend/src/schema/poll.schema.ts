@@ -1,22 +1,23 @@
-import { Schema, model } from "mongoose";
-import { IPollModel } from "../models/interfaces/poll.model.interface";
+import { Schema, model, Document } from "mongoose";
 
-const PollSchema = new Schema<IPollModel>(
+export interface PollDocument extends Document {
+  question: string;
+  options: string[];
+  createdBy: string; // firebase uid
+  createdAt: Date;
+}
+
+const pollSchema = new Schema<PollDocument>(
   {
-    question: {
-      type: String,
-      required: true,
-    },
+    question: { type: String, required: true },
     options: {
       type: [String],
       required: true,
-      validate: {
-        validator: (v: string[]) => v.length >= 2,
-        message: "At least 2 options are required",
-      },
+      validate: [(v: string[]) => v.length >= 2, "At least 2 options required"],
     },
+    createdBy: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-export const Poll = model<IPollModel>("Poll", PollSchema);
+export const PollModel = model<PollDocument>("Poll", pollSchema);

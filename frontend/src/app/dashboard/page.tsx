@@ -1,3 +1,4 @@
+//dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -5,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/app/components/Navbar";
 import CreatePoll from "../components/CreatePoll";
+import MyPolls from "../components/MyPolls";
 
 type Tab = "overview" | "polls" | "create";
 
@@ -94,12 +96,13 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {activeTab === "polls" && (
-          <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
-            <h3 className="text-xl font-bold mb-4">My Polls</h3>
-            <p className="text-gray-600">You have no polls yet.</p>
-          </div>
-        )}
+ {activeTab === "polls" && (
+  <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
+    <h3 className="text-xl font-bold mb-4">My Polls</h3>
+    <MyPolls />
+  </div>
+)}
+
 
       {activeTab === "create" && (
   <CreatePoll onCancel={() => setActiveTab("overview")} />
