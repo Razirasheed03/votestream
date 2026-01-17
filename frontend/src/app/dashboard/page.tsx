@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/app/components/Navbar";
+import CreatePoll from "../components/CreatePoll";
 
 type Tab = "overview" | "polls" | "create";
 
@@ -100,14 +101,10 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {activeTab === "create" && (
-          <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
-            <h3 className="text-xl font-bold mb-6">Create Poll</h3>
-            <p className="text-gray-600">
-              Poll creation form goes here (next step).
-            </p>
-          </div>
-        )}
+      {activeTab === "create" && (
+  <CreatePoll onCancel={() => setActiveTab("overview")} />
+)}
+
 
       </main>
     </div>

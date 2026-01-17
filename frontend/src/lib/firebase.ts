@@ -1,3 +1,4 @@
+// frontend/src/lib/firebase.ts
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
