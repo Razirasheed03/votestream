@@ -7,6 +7,23 @@ export class PollService implements IPollService {
     private readonly _pollRepository: IPollRepository
   ) {}
 
+  private mapPollToView(poll: any): PollView {
+    const totalVotes = poll.options.reduce((sum: number, option: any) => sum + (option.votes || 0), 0);
+
+    return {
+      id: poll._id.toString(),
+      title: poll.question,
+      question: poll.question,
+      totalVotes,
+      options: poll.options.map((option: any) => ({
+        id: option._id.toString(),
+        text: option.text,
+        votes: option.votes,
+        percentage: totalVotes === 0 ? 0 : Math.round((option.votes / totalVotes) * 100),
+      })),
+    };
+  }
+
   async createPoll(
     question: string,
     options: string[],
@@ -30,22 +47,13 @@ export class PollService implements IPollService {
   async getActivePolls(): Promise<PollView[]> {
     const polls = await this._pollRepository.findActive();
 
-    return polls.map(poll => {
-      const totalVotes = poll.options.reduce((sum, option) => sum + (option.votes || 0), 0);
+    return polls.map(poll => this.mapPollToView(poll));
+  }
 
-      return {
-        id: poll._id.toString(),
-        title: poll.question,
-        question: poll.question,
-        totalVotes,
-        options: poll.options.map(option => ({
-          id: option._id.toString(),
-          text: option.text,
-          votes: option.votes,
-          percentage: totalVotes === 0 ? 0 : Math.round((option.votes / totalVotes) * 100),
-        })),
-      };
-    });
+  async getPollView(pollId: string): Promise<PollView | null> {
+    const poll = await this._pollRepository.findById(pollId);
+    if (!poll) return null;
+    return this.mapPollToView(poll);
   }
 
   async vote(pollId: string, optionId: string, userId: string): Promise<{ success: true }> {

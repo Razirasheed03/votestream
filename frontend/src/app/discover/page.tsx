@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Socket } from "socket.io-client";
 import PollCarousel from "../components/discover/PollCarousel";
 import PollDetails from "../components/discover/PollDetails";
 import ChatPanel from "../components/discover/ChatPanel";
@@ -9,12 +10,57 @@ import { Poll } from "../components/discover/Types";
 import { getActivePolls, voteOnPoll } from "../../lib/api";
 import Navbar from "../components/Navbar";
 import { useAuth } from "@/context/AuthContext";
+import { createAuthedSocket } from "@/lib/socket";
 
 export default function DiscoverPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [polls, setPolls] = useState<Poll[]>([]);
   const [selectedPollId, setSelectedPollId] = useState<string>("");
+  const socketRef = useRef<Socket | null>(null);
+  const previousPollIdRef = useRef<string | null>(null);
+
+  // Establish socket connection after auth is ready
+  useEffect(() => {
+    if (loading || !user) return;
+
+    let active = true;
+
+    (async () => {
+      try {
+        const socket = await createAuthedSocket();
+        if (!active) {
+          socket.disconnect();
+          return;
+        }
+
+        socketRef.current = socket;
+
+        socket.on("poll-updated", (updated: Poll) => {
+          setPolls(prev => {
+            const exists = prev.find(p => p.id === updated.id);
+            if (exists) {
+              return prev.map(p => (p.id === updated.id ? updated : p));
+            }
+            return [...prev, updated];
+          });
+        });
+      } catch (err) {
+        console.error("Socket connection failed", err);
+      }
+    })();
+
+    return () => {
+      active = false;
+      if (socketRef.current) {
+        if (previousPollIdRef.current) {
+          socketRef.current.emit("leave-poll", previousPollIdRef.current);
+        }
+        socketRef.current.disconnect();
+      }
+      socketRef.current = null;
+    };
+  }, [loading, user]);
 
   useEffect(() => {
     if (loading) return;
@@ -38,17 +84,36 @@ export default function DiscoverPage() {
     load();
   }, [loading, user, router]);
 
+  // Join/leave poll rooms when selection changes
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket || !selectedPollId) return;
+
+    const previous = previousPollIdRef.current;
+    if (previous && previous !== selectedPollId) {
+      socket.emit("leave-poll", previous);
+    }
+    socket.emit("join-poll", selectedPollId);
+    previousPollIdRef.current = selectedPollId;
+  }, [selectedPollId]);
+
   const handleVote = async (optionId: string) => {
     if (!selectedPollId) return;
 
     try {
-      await voteOnPoll(selectedPollId, optionId);
-      const refreshed = await getActivePolls();
-      setPolls(refreshed);
-      if (refreshed.some(p => p.id === selectedPollId)) {
-        setSelectedPollId(selectedPollId);
-      } else if (refreshed.length > 0) {
-        setSelectedPollId(refreshed[0].id);
+      const socket = socketRef.current;
+      if (socket) {
+        socket.emit("vote", { pollId: selectedPollId, optionId });
+      } else {
+        // Fallback to REST if socket not ready
+        await voteOnPoll(selectedPollId, optionId);
+        const refreshed = await getActivePolls();
+        setPolls(refreshed);
+        if (refreshed.some(p => p.id === selectedPollId)) {
+          setSelectedPollId(selectedPollId);
+        } else if (refreshed.length > 0) {
+          setSelectedPollId(refreshed[0].id);
+        }
       }
     } catch (err) {
       console.error("Failed to submit vote", err);

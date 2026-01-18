@@ -24,5 +24,7 @@ export interface IPollService {
 
   getActivePolls(): Promise<PollView[]>;
 
+  getPollView(pollId: string): Promise<PollView | null>;
+
   vote(pollId: string, optionId: string, userId: string): Promise<{ success: true }>;
 }

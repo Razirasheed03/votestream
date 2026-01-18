@@ -1,11 +1,23 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import { env } from "./config/env";
 import { connectDatabase } from "./config/mongodb";
 import pollRouter from "./routes/poll.route";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import { initializeSocketServer } from "./sockets";
 
 const app = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+  },
+});
 
 /**
  * ✅ ABSOLUTE FIRST: CORS
@@ -67,7 +79,9 @@ app.use((_req, res) => {
  * Start server AFTER DB
  */
 connectDatabase().then(() => {
-  app.listen(env.PORT, () => {
+  initializeSocketServer(io);
+
+  httpServer.listen(env.PORT, () => {
     console.log(`🚀 Backend running on http://localhost:${env.PORT}`);
   });
 });
