@@ -142,7 +142,7 @@ export default function DiscoverPage() {
         {selectedPoll && (
           <div className="grid lg:grid-cols-[1fr_1.4fr] gap-6">
             <PollDetails poll={selectedPoll} onVote={handleVote} />
-            <ChatPanel />
+            <ChatPanel socket={socketRef.current} pollId={selectedPollId} />
           </div>
         )}
       </main>

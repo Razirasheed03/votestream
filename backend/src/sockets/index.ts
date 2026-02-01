@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 import { firebaseAdmin } from "../config/firebase";
 import { pollService } from "../dependencies/poll.di";
 import { registerPollSocket } from "./poll.socket";
+import { registerChatSocket } from "./chat.socket";
 
 export const initializeSocketServer = (io: Server) => {
   io.use(async (socket, next) => {
@@ -25,5 +26,6 @@ export const initializeSocketServer = (io: Server) => {
 
   io.on("connection", (socket: Socket) => {
     registerPollSocket(io, socket, pollService);
+    registerChatSocket(io, socket);
   });
 };
