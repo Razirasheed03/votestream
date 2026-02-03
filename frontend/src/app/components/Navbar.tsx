@@ -28,112 +28,118 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="relative z-50 px-6 py-5">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white/70 backdrop-blur-2xl border border-white/60 rounded-2xl px-6 py-4 shadow-lg">
-          <div className="flex justify-between items-center">
-            {/* LOGO */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-                ⚡
-              </div>
-              <div>
-                <h1 className="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  VoteStream
-                </h1>
-                <p className="text-xs text-gray-500">
-                  Real-time engagement
-                </p>
-              </div>
-            </div>
+    <header className="sticky top-0 z-50 w-full border-b border-green-100 bg-white/80 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="h-16 flex items-center justify-between">
 
-            {/* CTA */}
-            {!user ? (
+          {/* LEFT — BRAND */}
+          <div
+            onClick={() => router.push("/")}
+            className="flex items-center gap-3 cursor-pointer select-none"
+          >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-black">
+              V
+            </div>
+            <div className="leading-tight">
+              <h1 className="text-lg font-extrabold text-gray-900">
+                VoteStream
+              </h1>
+              <p className="text-xs text-gray-500">
+                Real-time engagement
+              </p>
+            </div>
+          </div>
+
+          {/* RIGHT — ACTIONS */}
+          {!user ? (
+            <button
+              onClick={handleGoogleSignIn}
+              className="px-6 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition shadow-sm"
+            >
+              Get Started
+            </button>
+          ) : (
+            <div className="relative">
               <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl text-white font-semibold shadow-lg hover:shadow-xl transition"
+                onClick={toggleUserMenu}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-green-50 transition"
               >
-                Get Started
-              </button>
-            ) : (
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={toggleUserMenu}
-                  className="flex items-center gap-3 px-4 py-2 bg-white/90 backdrop-blur-xl border border-green-200 rounded-xl hover:shadow-lg transition"
+                <div className="relative w-9 h-9">
+  {user.photoURL ? (
+    <img
+      src={user.photoURL}
+      alt={user.displayName || "User"}
+      className="w-9 h-9 rounded-full border border-green-300 object-cover"
+      onError={(e) => {
+        e.currentTarget.style.display = "none";
+      }}
+    />
+  ) : null}
+
+  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-green-600 text-white text-sm font-bold">
+    {(user.displayName || "U").charAt(0).toUpperCase()}
+  </div>
+</div>
+
+                <svg
+                  className={`w-4 h-4 text-green-700 transition-transform ${
+                    showUserMenu ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <img
-                    src={user.photoURL || "/avatar-placeholder.png"}
-                    alt={user.displayName || "User"}
-                    className="w-9 h-9 rounded-lg border border-green-400"
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
                   />
-                  <div className="hidden md:block text-left">
-                    <p className="text-sm font-semibold">
+                </svg>
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute right-0 mt-3 w-60 rounded-xl bg-white border border-green-200 shadow-xl overflow-hidden">
+                  
+                  {/* USER INFO */}
+                  <div className="px-4 py-3 border-b border-green-100">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
                       {user.displayName}
                     </p>
-                    <p className="text-xs text-green-600">
+                    <p className="text-xs text-gray-500 truncate">
                       {user.email}
                     </p>
                   </div>
-                  <svg
-                    className={`w-4 h-4 text-green-600 transition-transform ${
-                      showUserMenu ? "rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+
+                  {/* DASHBOARD */}
+                  <button
+                    onClick={goToDashboard}
+                    className="w-full px-4 py-3 text-sm text-left hover:bg-green-50 transition flex items-center gap-3"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
+                    <span className="w-7 h-7 rounded-md bg-green-500 text-white flex items-center justify-center text-xs">
+                      D
+                    </span>
+                    Dashboard
+                  </button>
 
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-3 w-64 bg-white/95 backdrop-blur border border-green-200 rounded-2xl shadow-xl overflow-hidden z-50">
-                    <div className="px-5 py-4 border-b border-green-100">
-                      <p className="text-sm font-bold">
-                        {user.displayName}
-                      </p>
-                      <p className="text-xs text-gray-600 truncate">
-                        {user.email}
-                      </p>
-                    </div>
+                  <div className="border-t border-green-100" />
 
-                    <button
-                      type="button"
-                      onClick={goToDashboard}
-                      className="w-full px-5 py-3 text-left text-sm hover:bg-green-50 transition flex items-center gap-3"
-                    >
-                      <span className="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center">
-                        🏠
-                      </span>
-                      Dashboard
-                    </button>
-
-                    <div className="border-t border-green-100" />
-
-                    <button
-                      type="button"
-                      onClick={logout}
-                      className="w-full px-5 py-3 text-left text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-3"
-                    >
-                      <span className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                        ⎋
-                      </span>
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                  {/* LOGOUT */}
+                  <button
+                    onClick={logout}
+                    className="w-full px-4 py-3 text-sm text-left text-red-600 hover:bg-red-50 transition flex items-center gap-3"
+                  >
+                    <span className="w-7 h-7 rounded-md bg-red-100 flex items-center justify-center text-xs">
+                      ⎋
+                    </span>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

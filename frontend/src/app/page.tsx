@@ -10,7 +10,7 @@ export default function HomePage() {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const router = useRouter();
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -20,147 +20,203 @@ export default function HomePage() {
     }
   };
 
-  const toggleUserMenu = () => {
-    setShowUserMenu((prev) => !prev);
-  };
-
   const goToDashboard = () => {
     router.push("/dashboard");
   };
-  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 relative overflow-hidden">
-
-      {/* Background blobs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-green-400/10 to-transparent rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-tl from-emerald-400/15 to-transparent rounded-full blur-3xl animate-float-delayed" />
-      </div>
-
-      {/* Grid overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
-
-   <Navbar/>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Navbar />
 
       {/* HERO */}
-      <section className="relative z-10 px-6 py-20">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <main className="max-w-7xl mx-auto px-6">
+        <section className="py-8 grid lg:grid-cols-2 gap-20 items-center">
 
           {/* LEFT */}
-          <div className="space-y-8">
-            <span className="inline-flex items-center gap-2 px-5 py-2 bg-white/80 backdrop-blur border border-green-200 rounded-full shadow">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-gray-700">
-                Lightning Fast • Real-Time
-              </span>
-            </span>
+          <div className="space-y-10 self-start">
+            <div className="space-y-4">
+              <h1 className="text-6xl font-bold tracking-tight leading-tight">
+                Real-time
+                <br />
+                audience engagement
+              </h1>
 
-            <h2 className="text-5xl lg:text-7xl font-black leading-tight">
-              <span className="text-gray-900">Poll & Chat</span>
-              <br />
-              <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                In Real-Time
-              </span>
-            </h2>
-
-            <p className="text-lg text-gray-600 max-w-xl">
-              Create instant polls, gather opinions, and chat with your audience
-              simultaneously in one beautiful interface.
-            </p>
+              <p className="text-lg text-slate-600 max-w-xl leading-relaxed">
+                A secure platform for conducting live polls and discussions.
+                Designed for reliability, clarity, and real-time feedback
+                without distractions.
+              </p>
+            </div>
 
             <div className="flex gap-4">
-{
-  !user ? (
-  <button
-    onClick={handleGoogleSignIn}
-    disabled={loading}
-    className="px-10 py-5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl text-white font-bold shadow-xl disabled:opacity-60"
+              {!user ? (
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="px-8 py-4 rounded-md bg-slate-900 text-white font-medium hover:bg-slate-800 transition disabled:opacity-60"
+                >
+                  {loading ? "Signing in…" : "Sign in with Google"}
+                </button>
+              ) : (
+      <button
+  type="button"
+  onClick={goToDashboard}
+  className="group inline-flex items-center gap-3
+             px-7 py-3.5 rounded-full
+             bg-slate-900 text-white
+             font-medium
+             transition-all duration-200
+             hover:bg-slate-800
+             hover:-translate-y-0.5
+             active:translate-y-0
+             shadow-md hover:shadow-lg"
+>
+  <span>
+    Go to dashboard
+  </span>
+
+  <svg
+    className="w-8 h-8 p-2 rounded-full
+               bg-white text-slate-900
+               transition-transform duration-200
+               rotate-45 group-hover:rotate-90"
+    viewBox="0 0 16 19"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    {loading ? "Signing in..." : "Get Started with Google"}
-  </button>
-) : (
-  <button className="px-10 py-5 bg-green-600 text-white rounded-2xl font-bold shadow-xl">
-    Go to Dashboard
-  </button>
-)
-}
+    <path
+      d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z"
+      className="fill-current"
+    />
+  </svg>
+</button>
 
-
-              <button className="px-10 py-5 bg-white border-2 border-green-300 rounded-2xl font-bold hover:bg-green-50 transition">
-                Learn More
-              </button>
+              )}
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-6">
-              {["Fast", "Secure", "Live"].map((label) => (
-                <div
-                  key={label}
-                  className="bg-white/60 backdrop-blur border border-white rounded-2xl p-4 text-center hover:scale-105 transition"
-                >
-                  <div className="text-2xl font-black text-green-600">
-                    {label}
-                  </div>
-                  <div className="text-xs text-gray-600 font-semibold mt-1">
-                    Real-Time
-                  </div>
+            {/* TRUST STRIP */}
+            <div className="pt-10 border-t border-slate-200">
+              <p className="text-sm text-slate-500 mb-4">
+                Designed for professional environments
+              </p>
+              <div className="grid grid-cols-3 gap-10 text-sm">
+                <div>
+                  <p className="font-semibold">Low latency</p>
+                  <p className="text-slate-500">
+                    Real-time updates without refresh.
+                  </p>
                 </div>
-              ))}
+                <div>
+                  <p className="font-semibold">Secure authentication</p>
+                  <p className="text-slate-500">
+                    OAuth-based Google login.
+                  </p>
+                </div>
+                <div>
+                  <p className="font-semibold">Scalable sessions</p>
+                  <p className="text-slate-500">
+                    Built to handle live audiences.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* RIGHT – Preview Cards */}
-          <div className="space-y-6">
+          {/* RIGHT */}
+<div className="flex items-center  self-center mt-12">
+  <div className="w-full space-y-8">
 
-            {/* Poll Card */}
-            <div className="bg-white/70 backdrop-blur border border-white rounded-3xl p-8 shadow-2xl hover:-translate-y-1 transition">
-              <h3 className="text-xl font-bold mb-4">
-                What feature do you like most?
-              </h3>
+    {/* TITLE */}
+    <div className="space-y-2">
+      <p className="text-xs uppercase tracking-wide text-slate-500">
+        Product workflow
+      </p>
+      <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
+        How the platform works
+      </h3>
+    </div>
 
-              {[
-                { label: "Real-Time Polling", value: 45 },
-                { label: "Live Chat", value: 30 },
-                { label: "Both", value: 25 },
-              ].map((opt) => (
-                <div key={opt.label} className="mb-4">
-                  <div className="flex justify-between text-sm font-semibold">
-                    <span>{opt.label}</span>
-                    <span className="text-green-600">{opt.value}%</span>
-                  </div>
-                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500"
-                      style={{ width: `${opt.value}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+    {/* FLOW LIST */}
+    <div className="space-y-4">
+
+      {[
+        {
+          title: "Create a poll",
+          desc: "Authenticated users create polls with multiple options and session rules."
+        },
+        {
+          title: "Start a room / session",
+          desc: "Polls run inside live sessions where participants join in real time."
+        },
+        {
+          title: "Live voting",
+          desc: "Votes are submitted instantly and aggregated without page refresh."
+        },
+        {
+          title: "Live chat",
+          desc: "Participants communicate during sessions through real-time messaging."
+        },
+        {
+          title: "View results & analytics",
+          desc: "Poll outcomes and participation data are available after the session."
+        },
+        {
+          title: "Dashboard access",
+          desc: "Users manage polls, sessions, and historical results from their dashboard."
+        }
+      ].map((item, index) => (
+        <div
+          key={item.title}
+          className="flex gap-5"
+        >
+          {/* STEP */}
+          <div className="flex flex-col items-center">
+            <div className="w-7 h-7 rounded-full border border-slate-400 text-sm flex items-center justify-center font-medium text-slate-700">
+              {index + 1}
             </div>
+            {index !== 5 && (
+              <div className="h-full w-px bg-slate-200 mt-1" />
+            )}
+          </div>
 
-            {/* Chat Card */}
-            <div className="bg-white/70 backdrop-blur border border-white rounded-3xl p-8 shadow-2xl">
-              <div className="flex justify-between mb-4">
-                <span className="font-bold">Live Chat</span>
-                <span className="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-full">
-                  3 online
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div className="bg-gray-50 rounded-xl p-3 text-sm">
-                  This looks amazing! 🚀
-                </div>
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl p-3 text-sm self-end">
-                  Glad you like it! 💫
-                </div>
-              </div>
-            </div>
-
+          {/* CONTENT */}
+          <div className="pb-6">
+            <p className="font-semibold text-slate-900">
+              {item.title}
+            </p>
+            <p className="text-sm text-slate-600 leading-relaxed max-w-md">
+              {item.desc}
+            </p>
           </div>
         </div>
-      </section>
+      ))}
+
+    </div>
+
+  </div>
+</div>
+
+
+
+        </section>
+
+       {/* SECONDARY SECTION */}
+<section className="py-10 border-t border-slate-200">
+  <div className="max-w-3xl mx-auto text-center space-y-4">
+
+    <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-slate-900">
+      Built for clarity, not noise
+    </h2>
+
+    <p className="text-slate-600 leading-relaxed text-lg">
+      The platform is intentionally restrained. Every interaction is
+      predictable, purposeful, and optimized for live collaboration
+      environments including meetings, classrooms, workshops, and events.
+    </p>
+
+  </div>
+</section>
+
+      </main>
     </div>
   );
 }
