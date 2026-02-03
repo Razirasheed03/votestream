@@ -20,7 +20,7 @@ export default function DiscoverPage() {
   const socketRef = useRef<Socket | null>(null);
   const previousPollIdRef = useRef<string | null>(null);
 
-  // Establish socket connection after auth is ready
+  /* ---------- SOCKET SETUP ---------- */
   useEffect(() => {
     if (loading || !user) return;
 
@@ -62,6 +62,7 @@ export default function DiscoverPage() {
     };
   }, [loading, user]);
 
+  /* ---------- LOAD POLLS ---------- */
   useEffect(() => {
     if (loading) return;
     if (!user) {
@@ -84,7 +85,7 @@ export default function DiscoverPage() {
     load();
   }, [loading, user, router]);
 
-  // Join/leave poll rooms when selection changes
+  /* ---------- JOIN / LEAVE POLL ROOMS ---------- */
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket || !selectedPollId) return;
@@ -97,6 +98,7 @@ export default function DiscoverPage() {
     previousPollIdRef.current = selectedPollId;
   }, [selectedPollId]);
 
+  /* ---------- VOTING ---------- */
   const handleVote = async (optionId: string) => {
     if (!selectedPollId) return;
 
@@ -105,7 +107,6 @@ export default function DiscoverPage() {
       if (socket) {
         socket.emit("vote", { pollId: selectedPollId, optionId });
       } else {
-        // Fallback to REST if socket not ready
         await voteOnPoll(selectedPollId, optionId);
         const refreshed = await getActivePolls();
         setPolls(refreshed);
@@ -125,26 +126,45 @@ export default function DiscoverPage() {
   if (loading || !user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50">
-        <Navbar/>
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Navbar />
 
-        <h1 className="text-3xl font-extrabold text-emerald-700">
-          Discover Polls
-        </h1>
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+{/* HEADER */}
+<div className="flex flex-col gap-1">
+  <button
+    onClick={() => router.push("/dashboard")}
+    className="inline-flex items-center gap-2 text-sm
+               text-slate-500 hover:text-slate-900
+               transition w-fit"
+  >
+    <span className="text-lg leading-none">←</span>
+    Back to dashboard
+  </button>
 
-        <PollCarousel
-          polls={polls}
-          selectedPollId={selectedPollId}
-          onSelect={setSelectedPollId}
-        />
+  <h1 className="text-2xl font-semibold tracking-tight leading-tight">
+    Discover polls
+  </h1>
+</div>
 
+
+        {/* CAROUSEL */}
+        <div>
+          <PollCarousel
+            polls={polls}
+            selectedPollId={selectedPollId}
+            onSelect={setSelectedPollId}
+          />
+        </div>
+
+        {/* DETAILS + CHAT */}
         {selectedPoll && (
           <div className="grid lg:grid-cols-[1fr_1.4fr] gap-6">
             <PollDetails poll={selectedPoll} onVote={handleVote} />
             <ChatPanel socket={socketRef.current} pollId={selectedPollId} />
           </div>
         )}
+
       </main>
     </div>
   );

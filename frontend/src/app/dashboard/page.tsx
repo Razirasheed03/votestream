@@ -1,4 +1,4 @@
-//dashboard/page.tsx
+// dashboard/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,56 +8,44 @@ import Navbar from "@/app/components/Navbar";
 import CreatePoll from "../components/CreatePoll";
 import MyPolls from "../components/MyPolls";
 
-type Tab = "overview" | "polls" | "create";
+type Tab = "polls" | "create";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [activeTab, setActiveTab] = useState<Tab>("polls");
 
-  // silent redirect (no loader, no flicker)
   useEffect(() => {
     if (user === null) {
       router.replace("/");
     }
   }, [user, router]);
 
-  // wait until auth resolves
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#e3f2fd] via-[#f5f9ff] to-[#e1f5fe] relative overflow-hidden">
-      
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-tl from-sky-400/15 to-transparent rounded-full blur-3xl" />
-      </div>
-
-      {/* Grid */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(2,136,209,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(2,136,209,0.03)_1px,transparent_1px)] bg-[size:80px_80px]" />
-
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <Navbar />
 
-      {/* Main */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
 
-        {/* Header */}
+        {/* HEADER */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Welcome, {user.displayName}
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Dashboard
           </h2>
-          <p className="text-sm text-gray-600">{user.email}</p>
+          <p className="text-sm text-slate-500">
+            {user.displayName} · {user.email}
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* PILLS (SAME SIZE, NEW THEME) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {[
-            { key: "overview", label: "Overview" },
-            { key: "polls", label: "My Polls" },
-            { key: "create", label: "Create Poll" },
-            { key: "discover", label: "Discover", external: true },
+            { key: "polls", label: "My Polls", desc: "Manage your polls" },
+            { key: "create", label: "Create Poll", desc: "Start a new poll" },
+            { key: "discover", label: "Discover", desc: "Explore public polls", external: true },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -66,57 +54,71 @@ export default function DashboardPage() {
                   ? router.push("/discover")
                   : setActiveTab(tab.key as Tab)
               }
-              className={`rounded-2xl p-5 text-left border-2 backdrop-blur transition
+              className={`group relative rounded-3xl p-6 text-left
+                border transition-all duration-300
                 ${
                   activeTab === tab.key
-                    ? "border-blue-500 bg-blue-50 shadow-lg"
-                    : "border-white/60 bg-white/70 hover:border-blue-300"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-lg scale-[1.02]"
+                    : "bg-white border-slate-200 hover:border-slate-400 hover:-translate-y-1 hover:shadow-md"
                 }`}
             >
-              <h3 className="font-bold text-gray-900">
+              <h3 className="text-lg font-semibold mb-1">
                 {tab.label}
               </h3>
-              <p className="text-sm text-gray-600">
-                {tab.key === "overview" && "Dashboard summary"}
-                {tab.key === "polls" && "View all polls"}
-                {tab.key === "create" && "Start new poll"}
-                {tab.key === "discover" && "Explore polls"}
+              <p
+                className={`text-sm ${
+                  activeTab === tab.key ? "text-slate-300" : "text-slate-500"
+                }`}
+              >
+                {tab.desc}
               </p>
+
+              {/* subtle corner accent */}
+              <span
+                className={`absolute top-4 right-4 h-2 w-2 rounded-full
+                  ${
+                    activeTab === tab.key
+                      ? "bg-white"
+                      : "bg-slate-400 group-hover:bg-slate-700"
+                  }`}
+              />
             </button>
           ))}
         </div>
 
-        {/* Content */}
-        {activeTab === "overview" && (
-          <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
-            <h3 className="text-xl font-bold mb-4">Recent Activity</h3>
-            <p className="text-gray-600">
-              No polls yet. Create your first poll to get started.
-            </p>
+        {/* CONTENT */}
+        {activeTab === "polls" && (
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+            <h3 className="text-xl font-semibold mb-4">
+              My Polls
+            </h3>
+
+            <MyPolls />
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => router.push("/discover")}
+                className="group inline-flex items-center gap-3
+                           px-6 py-3 rounded-full
+                           bg-slate-900 text-white
+                           font-medium
+                           transition-all duration-200
+                           hover:bg-slate-800
+                           hover:-translate-y-0.5
+                           shadow-md hover:shadow-lg"
+              >
+                Explore Discover
+                <span className="transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </button>
+            </div>
           </div>
         )}
 
- {activeTab === "polls" && (
-  <div className="bg-white/70 backdrop-blur border-2 border-white/60 rounded-3xl p-8 shadow-xl">
-    <h3 className="text-xl font-bold mb-4">My Polls</h3>
-    <MyPolls />
-    <div className="mt-4 flex justify-end">
-      <button
-        onClick={() => router.push("/discover")}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition"
-      >
-        Go to Discover
-        <span aria-hidden="true">→</span>
-      </button>
-    </div>
-  </div>
-)}
-
-
-      {activeTab === "create" && (
-  <CreatePoll onCancel={() => setActiveTab("overview")} />
-)}
-
+        {activeTab === "create" && (
+          <CreatePoll onCancel={() => setActiveTab("polls")} />
+        )}
 
       </main>
     </div>

@@ -102,36 +102,55 @@ export default function CreatePoll({
   };
 
   return (
-    <div className="relative bg-white/70 backdrop-blur-2xl border-2 border-white/60 rounded-3xl p-8 shadow-2xl">
+    <div
+      className="relative bg-white border border-slate-200 rounded-3xl p-8
+                 shadow-sm transition-all duration-300
+                 animate-in fade-in slide-in-from-bottom-2"
+    >
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 font-semibold">
+        <div
+          className="mb-6 p-4 rounded-xl border border-red-200
+                     bg-red-50 text-red-700 font-medium
+                     animate-in fade-in slide-in-from-top-2"
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-semibold">
+        <div
+          className="mb-6 p-4 rounded-xl border border-emerald-200
+                     bg-emerald-50 text-emerald-700 font-medium
+                     animate-in fade-in slide-in-from-top-2"
+        >
           {success}
         </div>
       )}
 
       <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-bold mb-2">
+        {/* QUESTION */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-900">
             Question
           </label>
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             rows={4}
-            className="w-full rounded-xl border-2 border-blue-200 px-4 py-3 outline-none resize-none focus:border-blue-500"
+            className="w-full rounded-xl border border-slate-300
+                       px-4 py-3 resize-none outline-none
+                       transition-all
+                       focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
           />
         </div>
 
+        {/* OPTIONS */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <label className="font-bold text-sm">Options</label>
-            <span className="text-xs text-gray-500">
+            <label className="font-medium text-sm text-slate-900">
+              Options
+            </label>
+            <span className="text-xs text-slate-500">
               Min 2 • Max 6
             </span>
           </div>
@@ -139,9 +158,14 @@ export default function CreatePoll({
           {options.map((option) => (
             <div
               key={option.id}
-              className="flex items-center gap-3"
+              className="flex items-center gap-3
+                         animate-in fade-in slide-in-from-left-2"
             >
-              <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-100 font-bold text-blue-600">
+              <span
+                className="w-8 h-8 flex items-center justify-center
+                           rounded-lg bg-slate-100
+                           font-medium text-slate-700"
+              >
                 {option.id}
               </span>
 
@@ -151,14 +175,20 @@ export default function CreatePoll({
                 onChange={(e) =>
                   updateOption(option.id, e.target.value)
                 }
-                className="flex-1 rounded-xl border-2 border-blue-200 px-3 py-2 outline-none focus:border-blue-500"
+                className="flex-1 rounded-xl border border-slate-300
+                           px-3 py-2 outline-none
+                           transition-all
+                           focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
               />
 
               <button
                 type="button"
                 onClick={() => removeOption(option.id)}
                 disabled={options.length <= 2}
-                className="text-red-500 disabled:opacity-30"
+                className="text-red-500 font-medium
+                           transition-opacity
+                           hover:opacity-80
+                           disabled:opacity-30"
               >
                 ✕
               </button>
@@ -169,17 +199,23 @@ export default function CreatePoll({
             type="button"
             onClick={addOption}
             disabled={options.length >= 6}
-            className="text-sm font-bold text-blue-600 hover:underline disabled:opacity-40"
+            className="text-sm font-medium text-slate-700
+                       hover:underline
+                       transition-opacity
+                       disabled:opacity-40"
           >
             + Add Option
           </button>
         </div>
 
-        <div className="flex justify-between pt-6 border-t">
+        {/* ACTIONS */}
+        <div className="flex justify-between pt-6 border-t border-slate-200">
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-3 rounded-xl border font-semibold"
+            className="px-6 py-3 rounded-xl border border-slate-300
+                       font-medium text-slate-700
+                       hover:bg-slate-50 transition"
           >
             Cancel
           </button>
@@ -188,9 +224,16 @@ export default function CreatePoll({
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold shadow-lg disabled:opacity-60"
+            className="px-7 py-3 rounded-full
+                       bg-slate-900 text-white
+                       font-medium
+                       transition-all duration-200
+                       hover:bg-slate-800
+                       hover:-translate-y-0.5
+                       shadow-md hover:shadow-lg
+                       disabled:opacity-60"
           >
-            {submitting ? "Creating..." : "Create Poll"}
+            {submitting ? "Creating…" : "Create Poll"}
           </button>
         </div>
       </div>

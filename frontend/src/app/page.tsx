@@ -50,13 +50,40 @@ export default function HomePage() {
 
             <div className="flex gap-4">
               {!user ? (
-                <button
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
-                  className="px-8 py-4 rounded-md bg-slate-900 text-white font-medium hover:bg-slate-800 transition disabled:opacity-60"
-                >
-                  {loading ? "Signing in…" : "Sign in with Google"}
-                </button>
+       <button
+  type="button"
+  onClick={handleGoogleSignIn}
+  disabled={loading}
+  className="group inline-flex items-center gap-3
+             px-7 py-3.5 rounded-full
+             bg-slate-900 text-white
+             font-medium
+             transition-all duration-200
+             hover:bg-slate-800
+             hover:-translate-y-0.5
+             active:translate-y-0
+             shadow-md hover:shadow-lg
+             disabled:opacity-60 disabled:cursor-not-allowed"
+>
+  <span>
+    {loading ? "Signing in…" : "Sign in with Google"}
+  </span>
+
+  <svg
+    className="w-8 h-8 p-2 rounded-full
+               bg-white text-slate-900
+               transition-transform duration-200
+               rotate-45 group-hover:rotate-90"
+    viewBox="0 0 16 19"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M7 18C7 18.5523 7.44772 19 8 19C8.55228 19 9 18.5523 9 18H7ZM8.70711 0.292893C8.31658 -0.0976311 7.68342 -0.0976311 7.29289 0.292893L0.928932 6.65685C0.538408 7.04738 0.538408 7.68054 0.928932 8.07107C1.31946 8.46159 1.95262 8.46159 2.34315 8.07107L8 2.41421L13.6569 8.07107C14.0474 8.46159 14.6805 8.46159 15.0711 8.07107C15.4616 7.68054 15.4616 7.04738 15.0711 6.65685L8.70711 0.292893ZM9 18L9 1H7L7 18H9Z"
+      className="fill-current"
+    />
+  </svg>
+</button>
+
               ) : (
       <button
   type="button"
