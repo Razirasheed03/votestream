@@ -9,5 +9,6 @@ router.post("/:pollId/vote/:optionId", firebaseAuthMiddleware, pollController.vo
 
 router.post("/", firebaseAuthMiddleware, pollController.create);
 router.get("/me", firebaseAuthMiddleware, pollController.listMyPolls);
+router.delete("/:pollId", firebaseAuthMiddleware, pollController.delete);
 
 export default router;

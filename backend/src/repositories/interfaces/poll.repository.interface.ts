@@ -1,10 +1,11 @@
 import { IPollModel } from "../../models/interfaces/poll.model.interface";
 
 export interface IPollRepository {
-  create(question: string, options: string[], userId: string): Promise<IPollModel>;
+  create(title: string, question: string, options: string[], userId: string): Promise<IPollModel>;
   findByUser(userId: string): Promise<IPollModel[]>;
   findActive(): Promise<IPollModel[]>;
   findById(id: string): Promise<IPollModel | null>;
+  deleteByIdAndUser(pollId: string, userId: string): Promise<IPollModel | null>;
   updateUserVote(
     pollId: string,
     userId: string,

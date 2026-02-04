@@ -17,6 +17,7 @@ export default function CreatePoll({
 }) {
   const { user, loading } = useAuth();
 
+  const [title, setTitle] = useState("");
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState<PollOption[]>([
     { id: 1, text: "" },
@@ -57,6 +58,12 @@ export default function CreatePoll({
       return;
     }
 
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) {
+      setError("Title is required");
+      return;
+    }
+
     const trimmedQuestion = question.trim();
     if (!trimmedQuestion) {
       setError("Question is required");
@@ -75,11 +82,13 @@ export default function CreatePoll({
     setSubmitting(true);
     try {
       await createPoll({
+        title: trimmedTitle,
         question: trimmedQuestion,
         options: validOptions,
       });
 
       setSuccess("Poll created successfully!");
+      setTitle("");
       setQuestion("");
       setOptions([
         { id: 1, text: "" },
@@ -128,6 +137,22 @@ export default function CreatePoll({
       )}
 
       <div className="space-y-6">
+        {/* TITLE */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-900">
+            Title
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full rounded-xl border border-slate-300
+                       px-4 py-3 outline-none
+                       transition-all
+                       focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+          />
+        </div>
+
         {/* QUESTION */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-slate-900">

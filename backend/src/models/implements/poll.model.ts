@@ -11,6 +11,7 @@ const pollOptionSchema = new Schema<IPollOption>(
 
 const pollSchema = new Schema<IPollModel>(
   {
+    title: { type: String, required: true },
     question: { type: String, required: true },
     options: { type: [pollOptionSchema], required: true },
     createdBy: { type: String, required: true },

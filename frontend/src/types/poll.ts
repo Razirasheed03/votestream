@@ -1,5 +1,6 @@
 // frontend/src/types/poll.ts
 export interface CreatePollRequest {
+  title: string;
   question: string;
   options: string[];
 }
@@ -11,6 +12,7 @@ export interface PollOptionResponse {
 
 export interface PollResponse {
   _id: string;
+  title: string;
   question: string;
   options: PollOptionResponse[];
   createdBy: string;

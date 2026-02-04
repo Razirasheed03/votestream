@@ -12,7 +12,7 @@ export class PollService implements IPollService {
 
     return {
       id: poll._id.toString(),
-      title: poll.question,
+      title: poll.title,
       question: poll.question,
       totalVotes,
       options: poll.options.map((option: any) => ({
@@ -25,15 +25,17 @@ export class PollService implements IPollService {
   }
 
   async createPoll(
+    title: string,
     question: string,
     options: string[],
     userId: string
   ) {
-    if (!question || options.length < 2) {
+    if (!title || !question || options.length < 2) {
       throw new AppError(400, "Invalid poll data");
     }
 
     return this._pollRepository.create(
+      title,
       question,
       options,
       userId
@@ -86,6 +88,14 @@ export class PollService implements IPollService {
       throw new AppError(400, "Unable to record vote");
     }
 
+    return { success: true };
+  }
+
+  async deletePoll(pollId: string, userId: string): Promise<{ success: true }> {
+    const deleted = await this._pollRepository.deleteByIdAndUser(pollId, userId);
+    if (!deleted) {
+      throw new AppError(404, "Poll not found");
+    }
     return { success: true };
   }
 }

@@ -7,6 +7,7 @@ export interface IPollOption {
 }
 
 export interface IPollModel extends Document {
+  title: string;
   question: string;
   options: IPollOption[];
   createdBy: string;

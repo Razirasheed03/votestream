@@ -1,10 +1,11 @@
-import { postJson, getJson } from "./http";
+import { postJson, getJson, deleteJson } from "./http";
 import { Poll } from "../app/components/discover/Types";
 
 /**
  * Create a poll (AUTH REQUIRED)
  */
 export async function createPoll(payload: {
+  title: string;
   question: string;
   options: string[];
 }): Promise<void> {
@@ -18,6 +19,7 @@ export async function createPoll(payload: {
 export async function getMyPolls(): Promise<{
   polls: {
     _id: string;
+    title: string;
     question: string;
     options: { _id: string; text: string; votes: number }[];
     createdAt: string;
@@ -38,4 +40,11 @@ export async function getActivePolls(): Promise<Poll[]> {
  */
 export async function voteOnPoll(pollId: string, optionId: string): Promise<{ success: true }> {
   return postJson(`/polls/${pollId}/vote/${optionId}`, {});
+}
+
+/**
+ * Delete a poll (AUTH REQUIRED)
+ */
+export async function deletePoll(pollId: string): Promise<{ success: true }> {
+  return deleteJson(`/polls/${pollId}`);
 }

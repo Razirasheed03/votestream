@@ -55,6 +55,39 @@ export async function postJson<TResponse>(
 }
 
 /**
+ * DELETE JSON helper
+ */
+export async function deleteJson<TResponse>(
+  path: string,
+  options?: {
+    auth?: boolean;
+  }
+): Promise<TResponse> {
+  const token =
+    options?.auth === false ? undefined : await getFirebaseIdToken();
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: "omit",
+  });
+
+  const data = await response.json().catch(() => {
+    throw new Error("Invalid response from server");
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message || `HTTP ${response.status}: ${response.statusText}`
+    );
+  }
+
+  return (data?.data ?? data) as TResponse;
+}
+
+/**
  * GET JSON helper
  */
 export async function getJson<TResponse>(

@@ -2,8 +2,13 @@ import { PollModel } from "../../models/implements/poll.model";
 import { IPollRepository } from "../interfaces/poll.repository.interface";
 
 export class PollRepository implements IPollRepository {
-  async create(question: string, options: string[], userId: string) {
-    return PollModel.create({ question, options: options.map(text => ({ text })), createdBy: userId });
+  async create(title: string, question: string, options: string[], userId: string) {
+    return PollModel.create({
+      title,
+      question,
+      options: options.map(text => ({ text })),
+      createdBy: userId,
+    });
   }
 
   async findByUser(userId: string) {
@@ -16,6 +21,10 @@ export class PollRepository implements IPollRepository {
 
   async findById(id: string) {
     return PollModel.findById(id);
+  }
+
+  async deleteByIdAndUser(pollId: string, userId: string) {
+    return PollModel.findOneAndDelete({ _id: pollId, createdBy: userId });
   }
 
   async updateUserVote(

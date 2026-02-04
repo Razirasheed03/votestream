@@ -15,6 +15,7 @@ export interface PollView {
 
 export interface IPollService {
   createPoll(
+    title: string,
     question: string,
     options: string[],
     userId: string
@@ -27,4 +28,6 @@ export interface IPollService {
   getPollView(pollId: string): Promise<PollView | null>;
 
   vote(pollId: string, optionId: string, userId: string): Promise<{ success: true }>;
+
+  deletePoll(pollId: string, userId: string): Promise<{ success: true }>;
 }

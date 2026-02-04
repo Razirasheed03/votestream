@@ -15,9 +15,10 @@ export class PollController {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const { question, options } = req.body;
+      const { title, question, options } = req.body;
 
       const poll = await this._pollService.createPoll(
+        title,
         question,
         options,
         userId
@@ -75,6 +76,22 @@ export class PollController {
       }
 
       const result = await this._pollService.vote(pollId, optionId, userId);
+
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const pollId = Array.isArray(req.params.pollId) ? req.params.pollId[0] : req.params.pollId;
+      const userId = (req as any).userId;
+      if (!userId) {
+        throw new AppError(401, "Unauthorized");
+      }
+
+      const result = await this._pollService.deletePoll(pollId, userId);
 
       res.status(200).json(result);
     } catch (err) {

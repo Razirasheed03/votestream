@@ -6,4 +6,5 @@ export interface IPollController {
   listMyPolls(req: Request, res: Response, next: NextFunction): Promise<void>;
   getActivePolls(req: Request, res: Response, next: NextFunction): Promise<void>;
   vote(req: Request, res: Response, next: NextFunction): Promise<void>;
+  delete(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
