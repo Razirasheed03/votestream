@@ -13,6 +13,8 @@ import { initializeSocketServer } from "./sockets";
 const allowedOrigins = [
   "http://localhost:3000",
   "https://votestreampolls.vercel.app",
+  "https://www.votestream.in",
+  "https://votestream.in",
 ];
 
 const corsOptions: cors.CorsOptions = {
