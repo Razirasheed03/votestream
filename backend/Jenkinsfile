@@ -8,7 +8,6 @@ pipeline {
   environment {
     APP_NAME = "votestream-backend"
     APP_DIR  = "backend"
-    NODE_ENV = "production"
   }
 
   stages {
@@ -22,7 +21,11 @@ pipeline {
     stage('Install dependencies') {
       steps {
         dir(APP_DIR) {
-          sh 'npm install --no-audit --no-fund'
+          sh '''
+            # Always install devDependencies for build
+            export NODE_ENV=development
+            npm install --no-audit --no-fund
+          '''
         }
       }
     }
@@ -30,7 +33,10 @@ pipeline {
     stage('Build') {
       steps {
         dir(APP_DIR) {
-          sh 'npm run build'
+          sh '''
+            export NODE_ENV=development
+            npm run build
+          '''
         }
       }
     }
@@ -39,9 +45,13 @@ pipeline {
       steps {
         dir(APP_DIR) {
           sh '''
+            # Runtime is production
+            export NODE_ENV=production
+
             pm2 describe "$APP_NAME" >/dev/null 2>&1 \
               && pm2 restart "$APP_NAME" \
               || pm2 start dist/server.js --name "$APP_NAME"
+
             pm2 save
           '''
         }
@@ -51,10 +61,10 @@ pipeline {
 
   post {
     success {
-      echo "CI/CD SUCCESS"
+      echo "✅ CI/CD SUCCESS"
     }
     failure {
-      echo "CI/CD FAILED"
+      echo "❌ CI/CD FAILED"
     }
   }
 }
