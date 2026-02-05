@@ -1,24 +1,20 @@
 pipeline {
   agent any
 
+  options {
+    disableConcurrentBuilds()
+  }
+
   environment {
     APP_NAME = "votestream-backend"
     APP_DIR  = "backend"
-    NODE_OPTIONS = "--max-old-space-size=256"
-    PM2_HOME = "/var/lib/jenkins/.pm2"
-    PATH = "/usr/bin:/usr/local/bin:/bin"
-  }
-
-  options {
-    timestamps()
-    disableConcurrentBuilds()
+    NODE_ENV = "production"
   }
 
   stages {
 
     stage('Checkout') {
       steps {
-        cleanWs()
         checkout scm
       }
     }
@@ -26,19 +22,7 @@ pipeline {
     stage('Install dependencies') {
       steps {
         dir(APP_DIR) {
-          sh '''
-            echo "Node version: $(node -v)"
-            echo "NPM version: $(npm -v)"
-
-            npm config set fund false
-            npm config set audit false
-
-            if [ ! -d node_modules ]; then
-              npm install --no-optional --legacy-peer-deps
-            else
-              echo "node_modules exists, skipping npm install"
-            fi
-          '''
+          sh 'npm install --no-audit --no-fund'
         }
       }
     }
@@ -46,10 +30,7 @@ pipeline {
     stage('Build') {
       steps {
         dir(APP_DIR) {
-          sh '''
-            echo "Building with limited memory"
-            NODE_OPTIONS=--max-old-space-size=256 npm run build
-          '''
+          sh 'npm run build'
         }
       }
     }
@@ -58,12 +39,9 @@ pipeline {
       steps {
         dir(APP_DIR) {
           sh '''
-            export PM2_HOME=/var/lib/jenkins/.pm2
-
-            pm2 describe $APP_NAME >/dev/null 2>&1 \
-              && pm2 restart $APP_NAME \
-              || pm2 start dist/server.js --name $APP_NAME
-
+            pm2 describe "$APP_NAME" >/dev/null 2>&1 \
+              && pm2 restart "$APP_NAME" \
+              || pm2 start dist/server.js --name "$APP_NAME"
             pm2 save
           '''
         }
@@ -73,15 +51,10 @@ pipeline {
 
   post {
     success {
-      echo "✅ Deployment successful"
+      echo "CI/CD SUCCESS"
     }
-
     failure {
-      echo "❌ Pipeline failed"
-    }
-
-    always {
-      echo "🧹 Cleanup"
+      echo "CI/CD FAILED"
     }
   }
 }
