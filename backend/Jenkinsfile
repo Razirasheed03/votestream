@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_ENV = 'production'
+        APP_DIR = '/home/ec2-user/apps/votestream/backend'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh '''
+                  cd backend
+                  npm install
+                '''
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                  cd backend
+                  npm run build
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                  cd backend
+                  pm2 delete votestream-backend || true
+                  pm2 start dist/index.js --name votestream-backend
+                  pm2 save
+                '''
+            }
+        }
+    }
+}
